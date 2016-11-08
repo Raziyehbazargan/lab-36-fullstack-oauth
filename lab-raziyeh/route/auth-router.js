@@ -5,6 +5,7 @@ const createError = require('http-errors')
 const jsonParser = require('body-parser').json()
 const debug = require('debug')('slugram:auth-router')
 const basicAuth = require('../lib/basic-auth-middleware.js')
+const googleOAUTH = require('../lib/google-oauth-middleware.js');
 const User = require('../model/user.js')
 
 // module constants
@@ -41,3 +42,40 @@ authRouter.get('/api/login', basicAuth, function(req, res, next){
   .catch(next)
 })
 
+authRouter.get('/api/oauth/signout-api',googleOAUTH, function(req, res) {
+  debug('GET /api/oauth/signout-api');
+  if(req.googleError) {
+    return res.redirect('/#/login');
+  }
+
+  //check if user already exists
+  User.findOne({email: req.googleOAUTH.email})
+  .then(user => {
+    if(!user) return Promise.reject(new Error('user not found'));
+    return user;
+  })
+  .catch( err => {
+    if(err.message === 'user not found') {
+      let userData = {
+        username: req.googleOAUTH.email,
+        email: req.googleOAUTH.email,
+        google :{
+          googleID: req.googleOAUTH.googleID,
+          tokenTTL: req.googleOAUTH.tokenTTL,
+          tokenTimestamp: Date.now(),
+          refreshToken: req.googleOAUTH.refreshToken,
+          accessToken: req.googleOAUTH.accessToken,
+        },
+      }
+      return new User(userData).save();
+    }
+    return Promise.reject(err);
+  })
+  .then(user => user.generateToken())
+  .then(token => {
+    res.redirect(`/?token=${token}`);
+  })
+  .catch(() => {
+    res.redirect('/#/login');
+  })
+});

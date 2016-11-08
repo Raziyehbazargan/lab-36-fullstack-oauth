@@ -13,6 +13,7 @@
     "jasmine": true
   },
   "globals": {
+    "__GOOGLE_CLIENT_ID__": true
   },
   "ecmaFeatures": {
     "modules": true,

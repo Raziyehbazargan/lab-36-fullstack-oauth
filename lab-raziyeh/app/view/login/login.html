@@ -10,7 +10,7 @@
 							</div>
 						</div>
 					</div>
-					
+
           <signin ng-show="showLoginForm"></signin>
           <signup ng-hide="showLoginForm"></signup>
 
@@ -20,6 +20,7 @@
                 <div class="text-center">
                   <h6>Are you a new User?</h6>
                   <a class="btn btn-default btn-sm" ng-click="showLoginForm = false">Sign up</a>
+                  <a ng-href="{{loginCtrl.googleAuthURL}}" class="btn btn-warning btn-sm" >Sign in with Google</a>
                 </div>
               </div>
             </div>
