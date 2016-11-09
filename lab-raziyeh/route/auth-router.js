@@ -73,7 +73,7 @@ authRouter.get('/api/oauth/signout-api',googleOAUTH, function(req, res) {
   })
   .then(user => user.generateToken())
   .then(token => {
-    res.redirect(`/?token=${token}`);
+    res.redirect(`/#/login/?token=${token}`);
   })
   .catch(() => {
     res.redirect('/#/login');
